@@ -68,11 +68,10 @@ public:
     return providedBasicPorts({});
   }
 
-//  virtual typename ActionT::Goal populate_goal();
+  virtual typename ActionT::Goal populate_goal() = 0;
 
   BT::NodeStatus tick() override {
-    typename ActionT::Goal goal;
-    goal.order = 5;
+    auto goal = populate_goal();
 
     // Send goal to the server
     if (!_action_client->wait_for_action_server(_server_timeout)) {

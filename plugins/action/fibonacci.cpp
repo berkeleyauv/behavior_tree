@@ -11,11 +11,11 @@ public:
   Fibonacci(const std::string& name, const BT::NodeConfiguration& config):
     BtAction<FibonacciAction>(name, config){}
 
-//  FibonacciAction::Goal populate_goal() override {
-//    FibonacciAction::Goal goal;
-//    goal.order = 5;
-//    return goal;
-//  }
+  FibonacciAction::Goal populate_goal() override {
+    FibonacciAction::Goal goal;
+    goal.order = 5;
+    return goal;
+  }
 };
 
 BT_REGISTER_NODES(factory){
