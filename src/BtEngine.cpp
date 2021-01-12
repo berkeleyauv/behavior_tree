@@ -2,7 +2,7 @@
 // Created by michael on 1/10/21.
 //
 
-#include "BtEngine.hpp"
+#include "behavior_tree/BtEngine.hpp"
 
 BtEngine::BtEngine(): Node("bt_engine") {
   configure_parameters();
@@ -26,7 +26,11 @@ void BtEngine::configure_parameters() {
 }
 
 void BtEngine::load_tree() {
-  tree_ = std::make_shared<Tree>(factory_.createTreeFromFile(bt_file_path_));
+  // Make the ROS node instance accessible to nodes in the tree
+  auto blackboard  = Blackboard::create();
+  auto node = this->create_sub_node("bt");
+  blackboard->set<rclcpp::Node::SharedPtr>("node", node);
+  tree_ = std::make_shared<Tree>(factory_.createTreeFromFile(bt_file_path_, blackboard));
 }
 
 void BtEngine::run() {

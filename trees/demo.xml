@@ -1,5 +1,11 @@
 <root main_tree_to_execute="MainTree">
     <BehaviorTree ID="MainTree">
-        <AlwaysSuccess/>
+        <ReactiveSequence>
+            <SetBlackboard output_key="the_answer1" value="hello"/>
+            <SetBlackboard output_key="the_answer2" value="hello"/>
+            <SetBlackboard output_key="the_answer3" value="hello"/>
+            <Fibonacci server_name="fibonacci" server_timeout="0"/>
+            <AlwaysSuccess/>
+        </ReactiveSequence>
     </BehaviorTree>
 </root>
