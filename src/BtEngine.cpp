@@ -30,6 +30,7 @@ void BtEngine::load_tree() {
   auto blackboard  = Blackboard::create();
   auto node = this->create_sub_node("bt");
   blackboard->set<rclcpp::Node::SharedPtr>("node", node);
+  RCLCPP_INFO(this->get_logger(), "Loading tree from file: " + bt_file_path_);
   tree_ = std::make_shared<Tree>(factory_.createTreeFromFile(bt_file_path_, blackboard));
 }
 
@@ -48,6 +49,7 @@ void BtEngine::add_groot_monitoring() {
 
 void BtEngine::load_plugins() {
   for (const auto & p : plugins_) {
+    RCLCPP_INFO(this->get_logger(), "Loading plugin: " + SharedLibrary::getOSName(p));
     factory_.registerFromPlugin(SharedLibrary::getOSName(p));
   }
 }
