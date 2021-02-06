@@ -1,5 +1,6 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
+import os
 
 
 def generate_launch_description():
@@ -8,9 +9,10 @@ def generate_launch_description():
             package='behavior_tree',
             namespace='',
             executable='bt_engine',
-            name='bt_engine',
+            # Do not declare a node name otherwise it messes with the action node names and will result in
+            # duplicate nodes!
             parameters=[
-                {'bt_file_path': '/home/michael/Github/robosub/src/behavior_tree/trees/demo.xml'},
+                {'bt_file_path': os.path.expanduser('~/Github/robosub/src/behavior_tree/trees/demo.xml')},
                 {'plugins': ['fibonacci_bt_node']}
             ]
         ),
