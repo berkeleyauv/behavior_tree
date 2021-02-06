@@ -125,7 +125,7 @@ public:
     _goal_rejected = false;
 
     /// Make sure the action server is available
-    if (!_action_client->wait_for_action_server(std::chrono::seconds(2))) {
+    if (!_action_client->wait_for_action_server(_server_timeout)) {
       RCLCPP_ERROR(_node->get_logger(), "Action server not available after waiting");
       return BT::NodeStatus::FAILURE;
     }
@@ -134,11 +134,9 @@ public:
     auto goal = populate_goal();
     auto send_goal_options = typename rclcpp_action::Client<ActionT>::SendGoalOptions();
     send_goal_options.goal_response_callback = std::bind(
-      &BtAction<ActionT>::goal_response_callback,
-      this, _1);
+      &BtAction<ActionT>::goal_response_callback, this, _1);
     send_goal_options.feedback_callback = std::bind(
-      &BtAction<ActionT>::feedback_callback, this, _1,
-      _2);
+      &BtAction<ActionT>::feedback_callback, this, _1, _2);
     send_goal_options.result_callback = std::bind(&BtAction<ActionT>::result_callback, this, _1);
     auto goal_handle_future = _action_client->async_send_goal(goal, send_goal_options);
 
@@ -193,14 +191,13 @@ public:
   {
     _goal_done = true;
     _result = result;
-    RCLCPP_WARN(_node->get_logger(), "result Callback not handled");
   }
 
   void feedback_callback(
     const typename rclcpp_action::ClientGoalHandle<ActionT>::SharedPtr,
     const std::shared_ptr<const typename ActionT::Feedback> feedback)
   {
-    RCLCPP_WARN(_node->get_logger(), "Feedback unhandled");
+    RCLCPP_DEBUG(_node->get_logger(), "Feedback unhandled");
   }
 
 
