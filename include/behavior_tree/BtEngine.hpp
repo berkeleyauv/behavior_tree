@@ -16,7 +16,8 @@
 
 using namespace BT;
 
-class BtEngine: public rclcpp::Node {
+class BtEngine : public rclcpp::Node
+{
   BehaviorTreeFactory factory_;
   std::shared_ptr<Tree> tree_;
   std::unique_ptr<BT::PublisherZMQ> groot_monitor_;
@@ -34,7 +35,6 @@ class BtEngine: public rclcpp::Node {
   void run();
   void add_groot_monitoring();
   void load_plugins();
-
 
 public:
   BtEngine();
