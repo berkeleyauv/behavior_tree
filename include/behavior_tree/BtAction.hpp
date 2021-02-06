@@ -201,9 +201,7 @@ public:
   }
 
 
-  void goal_response_callback(
-    std::shared_future
-    <rclcpp_action::ClientGoalHandle<example_interfaces::action::Fibonacci>::SharedPtr> future)
+  void goal_response_callback(std::shared_future<typename rclcpp_action::ClientGoalHandle<ActionT>::SharedPtr> future)
   {
     auto goal_handle = future.get();
     if (!goal_handle) {
