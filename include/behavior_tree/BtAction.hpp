@@ -10,13 +10,12 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "behaviortree_cpp_v3/bt_factory.h"
-#include "example_interfaces/action/fibonacci.hpp"
 
 using namespace std::chrono_literals;
 using namespace std::placeholders;
 
 /**
- * Template specialization to converts a string to Position2D.
+ * Template specialization to converts a string to std::chrono timeout.
  */
 namespace BT
 {
@@ -30,7 +29,7 @@ inline std::chrono::milliseconds convertFromString(StringView str)
 /**
  * BtAction class for running ROS2 actions from within BTCPP behavior trees
  * All ROS2 actions should inherit from this class and at minimum must implement the
- * populate_goal method
+ * populate_request method
  */
 
 template<class ActionT>
@@ -142,16 +141,10 @@ public:
   BtAction(const std::string & name, const BT::NodeConfiguration & config)
   : BT::ActionNodeBase(name, config)
   {
-    std::string node_namespace;
-
     _server_name = getInput<std::string>("server_name").value();
     _server_timeout = getInput<std::chrono::milliseconds>("server_timeout").value();
     _cancel_timeout = getInput<std::chrono::milliseconds>("cancel_timeout").value();
 
-    /* Create a new node with the specified namespace, since this node might be copied elsewhere in the tree
-     * we force the name to be unique using the current system time
-     */
-    config.blackboard->template get<std::string>("node_namespace", node_namespace);
     config.blackboard->template get<rclcpp::Node::SharedPtr>("node", _node);
 
     _action_client = rclcpp_action::create_client<ActionT>(_node, _server_name);
