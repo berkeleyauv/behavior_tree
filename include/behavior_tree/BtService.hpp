@@ -78,9 +78,11 @@ public:
     return providedBasicPorts({});
   }
 
-  virtual typename ServiceT::Request populate_request() = 0;
+  virtual typename ServiceT::Request::SharedPtr populate_request() = 0;
 
-  virtual BT::NodeStatus handle_response(typename ServiceT::Response response) = 0;
+  virtual BT::NodeStatus handle_response(typename ServiceT::Response::SharedPtr response) = 0;
+
+  void halt() override {}
 
   BT::NodeStatus tick() override {
     while (!_client->wait_for_service(_server_timeout)) {
@@ -90,7 +92,7 @@ public:
       }
       RCLCPP_INFO(_node->get_logger(), "waiting for service to appear...");
     }
-    auto request = populate_request();
+    typename ServiceT::Request::SharedPtr request = populate_request();
     auto result_future = _client->async_send_request(request);
     if (rclcpp::spin_until_future_complete(_node, result_future) !=
         rclcpp::FutureReturnCode::SUCCESS) {
