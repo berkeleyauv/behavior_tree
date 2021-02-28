@@ -39,6 +39,10 @@ protected:
   rclcpp::Node::SharedPtr _node;
   typename rclcpp::Client<ServiceT>::SharedPtr _client;
 
+  /// State variables
+  std::shared_future<typename ServiceT::Response::SharedPtr> _future_response;
+  BT::NodeStatus _result;
+
   /// Port inputs
   std::string _server_name{};
   std::chrono::milliseconds _server_timeout{};
@@ -85,21 +89,25 @@ public:
   void halt() override {}
 
   BT::NodeStatus tick() override {
-    while (!_client->wait_for_service(_server_timeout)) {
-      if (!rclcpp::ok()) {
-        RCLCPP_ERROR(_node->get_logger(), "Client interrupted while waiting for service to appear.");
-        return BT::NodeStatus::FAILURE;
+    if(this->status() == BT::NodeStatus::IDLE){
+      while (!_client->wait_for_service(_server_timeout)) {
+        if (!rclcpp::ok()) {
+          RCLCPP_ERROR(_node->get_logger(), "Client interrupted while waiting for service to appear.");
+          return BT::NodeStatus::FAILURE;
+        }
+        RCLCPP_INFO(_node->get_logger(), "waiting for service to appear...");
       }
-      RCLCPP_INFO(_node->get_logger(), "waiting for service to appear...");
+      typename ServiceT::Request::SharedPtr request = populate_request();
+
+      auto response_received_callback = [this](typename rclcpp::Client<ServiceT>::SharedFuture future) {
+        auto result = future.get();
+        _result = handle_response(result);
+      };
+      _future_response = _client->async_send_request(request, response_received_callback);
+      _result = BT::NodeStatus::RUNNING;
     }
-    typename ServiceT::Request::SharedPtr request = populate_request();
-    auto result_future = _client->async_send_request(request);
-    if (rclcpp::spin_until_future_complete(_node, result_future) !=
-        rclcpp::FutureReturnCode::SUCCESS) {
-      RCLCPP_ERROR(_node->get_logger(), "service call failed :(");
-      return BT::NodeStatus::FAILURE;
-    }
-    return handle_response(result_future.get());
+    rclcpp::spin_some(_node);
+    return _result;
   }
 }; // class BtService
 
