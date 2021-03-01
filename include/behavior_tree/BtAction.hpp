@@ -42,7 +42,7 @@ protected:
   typename rclcpp_action::Client<ActionT>::SharedPtr _action_client;
 
   /// State variables
-  bool _goal_done{false}, _goal_rejected{false};
+  bool _goal_done{false};
   typename rclcpp_action::ClientGoalHandle<ActionT>::WrappedResult _result{};
 
   /// Port inputs
@@ -53,7 +53,7 @@ protected:
   {
     while (rclcpp::ok()) {
       rclcpp::spin_some(_node);
-      if (_goal_done || _goal_rejected) {
+      if (_goal_done) {
         if (_result.code == rclcpp_action::ResultCode::CANCELED) {
           RCLCPP_INFO(_node->get_logger(), "Goal canceled successfully");
         }
@@ -66,7 +66,6 @@ protected:
   {
     /// Reset any state if needed
     _goal_done = false;
-    _goal_rejected = false;
 
     /// Make sure the action server is available
     if (!_action_client->wait_for_action_server(_server_timeout)) {
@@ -101,11 +100,8 @@ protected:
   BT::NodeStatus process_goal_status()
   {
     // Process any flags that might be set after spinning the node
-    if (_goal_done || _goal_rejected) {
-      // Rejected goal is an instant failure
-      if (_goal_rejected) {
-        return BT::NodeStatus::FAILURE;
-      } else { // handle the result after the actions has completed
+    if (_goal_done) {
+      // handle the result after the actions has completed
         switch (_result.code) {
           case rclcpp_action::ResultCode::SUCCEEDED:
             return BT::NodeStatus::SUCCESS;
@@ -120,7 +116,6 @@ protected:
             return BT::NodeStatus::FAILURE;
         }
       }
-    }
     return BT::NodeStatus::RUNNING;
   }
 
