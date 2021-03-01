@@ -124,7 +124,64 @@ corresponding BT::NodeStatu
 | server_name   | None |name of the service to call |
 
 ---
-# Creating a custom ROS2 action client node
 
+# Creating a custom ROS2 action/service client node
 
-# Creating a custom ROS2 service client node
+[Action Service Example](https://github.com/berkeleyauv/sub_behavior/blob/master/sub_behavior/plugins/action/snap_photo.cpp)
+
+[Action Client Example](https://github.com/berkeleyauv/sub_behavior/blob/master/sub_behavior/plugins/action/move_distance.cpp)
+
+1. Create a new .cpp file for the desired node, typically this will be
+in `plugins/action` within a ROS2 package
+2. The cpp file should contain a class that inherits `public BtAction<ActionType>`
+or `public BtService<ServiceType>`, we will override the necessary methods to
+generate a fully implemented behavior tree node.
+3. For action client override the `ActionType::Goal populate_goal()` method,
+for a service client override `ServiceType::Request::SharedPtr populate_request()`
+and `BT::NodeStatus handle_response(ServiceType::Response::SharedPtr response)`.
+4. (Optional) Override the `static PortsList providedPorts()` method to add additional ports,
+the code should look similar to the below example code segment
+```
+static PortsList providedPorts() {
+     return providedBasicPorts({InputPort<geometry_msgs::msg::Vector3>("distances")});
+}
+```
+5. Add the following code segment, changing the `Type` and `ClientNodeName`
+based on your setup. The name that you set here is the name that will be used
+in the tree.xml.
+```
+BT_REGISTER_NODES(factory) {
+     factory.registerNodeType<Type>("ClientNodeName");
+}
+```
+6. See the Building Nodes section
+
+# Building Nodes
+
+Add package dependencies to the `CMakeLists.txt` and add the following
+snippet adapted to your behavior tree node
+```
+add_library(name_bt_node SHARED plugins/action/name.cpp)
+list(APPEND plugin_libs name_bt_node)
+```
+The CMakeLists.txt should include the following supporting code
+
+```
+set(dependencies
+        rclcpp
+        ...
+        )
+
+<<<List of plugin specific segments resembling the above code snippet>>>
+
+foreach(bt_plugin ${plugin_libs})
+  ament_target_dependencies(${bt_plugin} ${dependencies})
+  target_compile_definitions(${bt_plugin} PRIVATE BT_PLUGIN_EXPORT)
+endforeach()
+
+install(TARGETS ${plugin_libs}
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+        )
+```
