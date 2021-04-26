@@ -70,7 +70,7 @@ install(TARGETS bt_engine
         DESTINATION lib/${PROJECT_NAME}
         )
 
-install(DIRECTORY launch
+install(DIRECTORY launch trees
         DESTINATION share/${PROJECT_NAME}
         )
 

@@ -95,7 +95,7 @@ public:
           RCLCPP_ERROR(_node->get_logger(), "Client interrupted while waiting for service to appear.");
           return BT::NodeStatus::FAILURE;
         }
-        RCLCPP_INFO(_node->get_logger(), "waiting for service to appear...");
+        // RCLCPP_INFO(_node->get_logger(), "waiting for service to appear...");
       }
       typename ServiceT::Request::SharedPtr request = populate_request();
 

@@ -3,6 +3,7 @@
 //
 
 #include "behavior_tree/BtEngine.hpp"
+#include <csignal>
 
 BtEngine::BtEngine()
 : Node("bt_engine")
@@ -66,9 +67,16 @@ void BtEngine::load_plugins()
   }
 }
 
+void sigint_handler(__attribute__((unused)) int signal_num) { // Silences compiler warnings
+  std::cout << "hello" << std::endl;
+  rclcpp::shutdown();
+  exit(0);
+}
+
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
+  signal(SIGINT, sigint_handler);
   rclcpp::spin(std::make_shared<BtEngine>());
   rclcpp::shutdown();
   return 0;
