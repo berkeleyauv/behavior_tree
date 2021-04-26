@@ -56,7 +56,7 @@ nodes in the tree
 | max_msg_per_second|25|ZMQ message rate limit for Groot|
 
 Note that all plugins specified in the `plugins` parameter should be
-pointed to by the `LD_LIBRARY_PATH` environemnt variable. This should be handled
+pointed to by the `LD_LIBRARY_PATH` environment variable. This should be handled
 automatically when sourcing the ROS2 workspace but if issues come up you can
 check to make sure LD_LIBRARY_PATH is set correctly by running
 `echo $LD_LIBRARY_PATH` in the terminal where you are having issues running the
