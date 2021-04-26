@@ -4,7 +4,7 @@
             <SetBlackboard output_key="the_answer1" value="hello"/>
             <SetBlackboard output_key="the_answer2" value="hello"/>
             <SetBlackboard output_key="the_answer3" value="hello"/>
-            <Fibonacci server_name="/fibonacci" server_timeout="0"/>
+            <Fibonacci server_name="/fibonacci" server_timeout="10" cancel_timeout="5" />
             <AlwaysSuccess/>
         </ReactiveSequence>
     </BehaviorTree>

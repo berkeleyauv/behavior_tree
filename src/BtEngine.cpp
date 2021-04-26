@@ -68,7 +68,6 @@ void BtEngine::load_plugins()
 }
 
 void sigint_handler(__attribute__((unused)) int signal_num) { // Silences compiler warnings
-  std::cout << "hello" << std::endl;
   rclcpp::shutdown();
   exit(0);
 }
