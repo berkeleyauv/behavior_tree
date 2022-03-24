@@ -34,7 +34,7 @@ void BtEngine::load_tree()
   auto blackboard = Blackboard::create();
   blackboard->set<rclcpp::Node::SharedPtr>("node", std::make_shared<rclcpp::Node>("bt_node"));
 //  blackboard->set<std::shared_ptr<tf2_ros::Buffer>>("tf_buffer", tf_);
-  RCLCPP_INFO(this->get_logger(), "Loading tree from file: " + bt_file_path_);
+  RCLCPP_INFO(this->get_logger(), "%s %s", "Loading tree from file: ", bt_file_path_.c_str());
   tree_ = std::make_shared<Tree>(factory_.createTreeFromFile(bt_file_path_, blackboard));
 }
 
@@ -62,7 +62,7 @@ void BtEngine::add_groot_monitoring()
 void BtEngine::load_plugins()
 {
   for (const auto & p : plugins_) {
-    RCLCPP_INFO(this->get_logger(), "Loading plugin: " + SharedLibrary::getOSName(p));
+    RCLCPP_INFO(this->get_logger(), "%s %s", "Loading plugin: @", SharedLibrary::getOSName(p).c_str());
     factory_.registerFromPlugin(SharedLibrary::getOSName(p));
   }
 }
